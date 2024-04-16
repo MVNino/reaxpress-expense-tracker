@@ -1,6 +1,9 @@
-const TransactionList = (props) => {
-  const { transactions } = props;
-  console.log("props : ", props);
+import PropTypes from "prop-types";
+
+const TransactionList = ({ transactions, deleteTransaction }) => {
+  const onDeleteTransaction = (id) => {
+    deleteTransaction(id);
+  };
 
   return (
     <>
@@ -8,14 +11,31 @@ const TransactionList = (props) => {
       <ul id="list" className="list">
         {Array.isArray(transactions) &&
           transactions.map((transaction) => (
-            <li className="minus" key={transaction.id}>
-              {transaction.name} <span>-${transaction.amount}</span>
-              <button className="delete-btn">x</button>
+            <li
+              className={transaction.amount > 0 ? "plus" : "minus"}
+              key={transaction.id}
+            >
+              {transaction.name} <span>${transaction.amount}</span>
+              <button
+                className="delete-btn"
+                onClick={onDeleteTransaction(transaction.id)}
+              >
+                x
+              </button>
             </li>
           ))}
       </ul>
     </>
   );
+};
+
+TransactionList.defaultProps = {
+  transactions: [],
+};
+
+TransactionList.propTypes = {
+  transactions: PropTypes.array.isRequired,
+  deleteTransaction: PropTypes.func,
 };
 
 export default TransactionList;
