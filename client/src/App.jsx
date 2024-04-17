@@ -55,7 +55,7 @@ const App = () => {
     console.log('id hehe ', id)
     const newA = transactions.filter((transaction) => transaction.id !== id);
     console.log('new a ', newA)
-    // setTransactions(newA);
+    setTransactions(newA);
   };
 
   return (

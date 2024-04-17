@@ -18,7 +18,7 @@ const TransactionList = ({ transactions, deleteTransaction }) => {
               {transaction.name} <span>${transaction.amount}</span>
               <button
                 className="delete-btn"
-                onClick={onDeleteTransaction(transaction.id)}
+                onClick={() => onDeleteTransaction(transaction.id)}
               >
                 x
               </button>
