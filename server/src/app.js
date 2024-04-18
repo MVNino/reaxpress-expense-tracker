@@ -1,5 +1,6 @@
 import express from "express";
 import mysql from "mysql2";
+import cors from "cors";
 
 const app = express();
 
@@ -7,6 +8,7 @@ const PORT = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 // MySQL Connection
 const connection = mysql.createConnection({
@@ -29,7 +31,14 @@ app.get("/api/expenses", (request, response) => {
   connection.query("SELECT * FROM expenses;", (error, results) => {
     if (error) return response.status(500).json({ error });
 
-    response.json({ data: results });
+    response.json({
+      data: results.map((item) => {
+        return {
+          ...item,
+          amount: +item.amount,
+        };
+      }),
+    });
   });
 });
 
@@ -46,7 +55,7 @@ app.get("/api/expenses/:id", ({ params }, response) => {
       if (!result.length)
         return response.status(404).json({ message: "Expense not found." });
 
-      response.json({ data: result });
+      response.json({ data: { ...result[0], amount: +result[0].amount } });
     }
   );
 });
@@ -78,19 +87,19 @@ app.put("/api/expenses/:id", ({ params, body }, response) => {
     (error, result) => {
       if (error) return response.status(500);
 
-      return response.json({ data: result, message: 'Updated' });
+      return response.json({ data: result, message: "Updated" });
     }
   );
 });
 
-app.delete('/api/expenses/:id', ({ params }, response) => {
-    const { id } = params
+app.delete("/api/expenses/:id", ({ params }, response) => {
+  const { id } = params;
 
-    connection.query('DELETE FROM expenses WHERE id=?', [id], (error) => {
-        if (error) return response.status(500).json({ error }) 
+  connection.query("DELETE FROM expenses WHERE id=?", [id], (error) => {
+    if (error) return response.status(500).json({ error });
 
-        return response.json({ message: 'Deleted' })
-    })
-})
+    return response.json({ message: "Deleted" });
+  });
+});
 
 app.listen(PORT, () => console.log(`Server running at port: ${PORT}`));
